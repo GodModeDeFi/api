@@ -12,6 +12,8 @@ import { AaveService } from '../aave/aave.service';
 import { Chain } from '../common/types/chain.type';
 
 const SUPPORTED_CHAINS = ['base', 'mode'] as const;
+import { SUPPORTED_CHAINS, SupportedChain } from '../common/types/chain.type';
+
 @Injectable()
 export class MarketsService {
   constructor(
@@ -83,9 +85,7 @@ export class MarketsService {
       : (Object.keys(this.protocolHandlers) as Protocol[]);
 
     const chainPromises = chainsToQuery.map(
-      async (
-        chain: (typeof SUPPORTED_CHAINS)[number],
-      ): Promise<ChainMarketsDto> => {
+      async (chain: SupportedChain): Promise<ChainMarketsDto> => {
         const chainQuery = { ...query, chain };
         const protocolPromises = protocolsToQuery.map((protocol) =>
           this.protocolHandlers[protocol](chainQuery).catch(() => ({

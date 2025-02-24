@@ -8,7 +8,6 @@ import { ChainService } from '../common/services/chain.service';
 import { PriceFeedService } from '../common/services/price-feed.service';
 
 // DTOs and types
-import { Chain } from '../common/types/chain.type';
 import {
   PoolOperationRequestDto,
   PoolOperationResponseDto,
@@ -28,9 +27,7 @@ import { flywheelLensRouterAbi } from './abi/flywheelLensRouter';
 
 // Utils
 import { formatDecimal } from '../common/utils/number.utils';
-
-const SUPPORTED_CHAINS = ['base', 'mode'] as const;
-export type SupportedChain = (typeof SUPPORTED_CHAINS)[number];
+import { SUPPORTED_CHAINS, SupportedChain } from '../common/types/chain.type';
 
 function ratePerBlockToAPY(ratePerBlock: bigint, blocksPerMin: number): number {
   const blocksPerDay = blocksPerMin * 60 * 24;
@@ -109,7 +106,7 @@ export class IonicService {
   }
 
   async getPositions(
-    chain: Chain,
+    chain: SupportedChain,
     address: Address,
   ): Promise<PositionsResponseDto> {
     const publicClient = this.chainService.getPublicClient(chain);

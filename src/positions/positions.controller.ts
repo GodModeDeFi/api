@@ -14,7 +14,7 @@ import { PositionsService } from './positions.service';
 
 // DTOs and types
 import { PositionsResponseDto } from '../common/dto/positions.dto';
-import { Chain } from '../common/types/chain.type';
+import { SupportedChain } from 'src/common/types/chain.type';
 
 // Protocol definitions
 export const PROTOCOLS = ['ionic', 'morpho', 'aave'] as const;
@@ -67,7 +67,7 @@ Returns user positions filtered by optional chain and protocol parameters.
   async getPositions(
     @Param('address') address: Address,
     @Query('protocol') protocol?: Protocol,
-    @Query('chain') chain?: Chain,
+    @Query('chain') chain?: SupportedChain,
   ): Promise<PositionsResponseDto> {
     return this.positionsService.getAllPositions(address, protocol, chain);
   }

@@ -16,7 +16,8 @@ import { Chain } from '../common/types/chain.type';
 import { Protocol } from './positions.controller';
 import { AaveService } from 'src/aave/aave.service';
 import { PositionsResponseDto as ProtocolPositionsResponseDto } from '../common/dto/position.dto';
-const SUPPORTED_CHAINS: Chain[] = ['base', 'mode'];
+import { Protocol } from './positions.controller';
+import { SUPPORTED_CHAINS, SupportedChain } from '../common/types/chain.type';
 
 @Injectable()
 export class PositionsService {
@@ -28,7 +29,7 @@ export class PositionsService {
 
   async getChainPositions(
     address: Address,
-    chain: Chain,
+    chain: SupportedChain,
     protocol?: Protocol,
   ): Promise<ChainPositionsDto | null> {
     // Get positions from both protocols if no filter, or just the requested protocol
@@ -257,12 +258,12 @@ export class PositionsService {
   async getAllPositions(
     address: Address,
     protocol?: Protocol,
-    chain?: Chain,
+    chain?: SupportedChain,
   ): Promise<PositionsResponseDto> {
     // Get positions for each supported chain
     const chainsToQuery = chain ? [chain] : SUPPORTED_CHAINS;
     const chainResults = await Promise.all(
-      chainsToQuery.map((chain) =>
+      chainsToQuery.map((chain: SupportedChain) =>
         this.getChainPositions(address, chain, protocol),
       ),
     );
