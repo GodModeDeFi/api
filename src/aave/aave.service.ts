@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Chain } from '../common/types/chain.type';
+import { SupportedChain } from '../common/types/chain.type';
 import { AaveOperationParams } from './dto/aave-operation.dto';
 import { SupabaseService } from '../common/database/supabase.service';
 import { ChainService } from '../common/services/chain.service';
@@ -215,7 +215,7 @@ export class AaveService {
     }
   }
 
-  async getMarketInfo(chain: Chain) {
+  async getMarketInfo(chain: SupportedChain) {
     try {
       const addresses = AAVE_V3_ADDRESSES[chain];
       if (!addresses) {
@@ -326,7 +326,7 @@ export class AaveService {
     }
   }
 
-  async getPositions(chain: Chain, address: string) {
+  async getPositions(chain: SupportedChain, address: string) {
     try {
       const addresses = AAVE_V3_ADDRESSES[chain];
       if (!addresses) {
@@ -473,7 +473,7 @@ export class AaveService {
     }
   }
 
-  async supply(chain: Chain, params: AaveOperationParams) {
+  async supply(chain: SupportedChain, params: AaveOperationParams) {
     try {
       const addresses = AAVE_V3_ADDRESSES[chain];
       if (!addresses) {
@@ -512,7 +512,7 @@ export class AaveService {
     }
   }
 
-  async withdraw(chain: Chain, params: AaveOperationParams) {
+  async withdraw(chain: SupportedChain, params: AaveOperationParams) {
     try {
       const addresses = AAVE_V3_ADDRESSES[chain];
       if (!addresses) {
@@ -550,7 +550,7 @@ export class AaveService {
     }
   }
 
-  async borrow(chain: Chain, params: AaveOperationParams) {
+  async borrow(chain: SupportedChain, params: AaveOperationParams) {
     try {
       const addresses = AAVE_V3_ADDRESSES[chain];
       if (!addresses) {
@@ -610,7 +610,7 @@ export class AaveService {
     }
   }
 
-  async repay(chain: Chain, params: AaveOperationParams) {
+  async repay(chain: SupportedChain, params: AaveOperationParams) {
     try {
       const addresses = AAVE_V3_ADDRESSES[chain];
       if (!addresses) {

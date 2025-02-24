@@ -5,7 +5,7 @@ import { TokenService } from './services/token.service';
 import { ChainService } from '../common/services/chain.service';
 // import { BaseRequestDto } from '../common/dto/base-request.dto';
 import { PositionsResponseDto } from '../common/dto/position.dto';
-import { Chain } from '../common/types/chain.type';
+import { SupportedChain } from '../common/types/chain.type';
 import { AaveOperationDto } from './dto/aave-operation.dto';
 import { AaveOperationParams } from './dto/aave-operation.dto';
 import { TOKEN_ADDRESSES } from './constants/tokens';
@@ -26,7 +26,7 @@ export class AaveController {
     status: 200,
     description: 'Returns market information for the specified chain',
   })
-  async getMarketInfo(@Param('chain') chain: Chain) {
+  async getMarketInfo(@Param('chain') chain: SupportedChain) {
     return this.aaveService.getMarketInfo(chain);
   }
 
@@ -40,7 +40,7 @@ export class AaveController {
     type: PositionsResponseDto
   })
   async getPositions(
-    @Param('chain') chain: Chain,
+    @Param('chain') chain: SupportedChain,
     @Param('address') address: string,
   ) {
     return this.aaveService.getPositions(chain, address);
@@ -50,7 +50,7 @@ export class AaveController {
   @ApiOperation({ summary: 'Supply assets to Aave pool' })
   @ApiParam({ name: 'chain', enum: ['optimism', 'base'] })
   async supply(
-    @Param('chain') chain: Chain,
+    @Param('chain') chain: SupportedChain,
     @Body() dto: AaveOperationDto,
   ) {
     const tokenAddress = TOKEN_ADDRESSES[chain]?.[dto.call_data.asset];
@@ -74,7 +74,7 @@ export class AaveController {
   @ApiOperation({ summary: 'Withdraw assets from Aave pool' })
   @ApiParam({ name: 'chain', enum: ['optimism', 'base'] })
   async withdraw(
-    @Param('chain') chain: Chain,
+    @Param('chain') chain: SupportedChain,
     @Body() withdrawData: AaveOperationDto,
   ) {
     const tokenAddress = TOKEN_ADDRESSES[chain]?.[withdrawData.call_data.asset];
@@ -98,7 +98,7 @@ export class AaveController {
   @ApiOperation({ summary: 'Borrow assets from Aave pool' })
   @ApiParam({ name: 'chain', enum: ['optimism', 'base'] })
   async borrow(
-    @Param('chain') chain: Chain,
+    @Param('chain') chain: SupportedChain,
     @Body() borrowData: AaveOperationDto,
   ) {
     const tokenAddress = TOKEN_ADDRESSES[chain]?.[borrowData.call_data.asset];
@@ -122,7 +122,7 @@ export class AaveController {
   @ApiOperation({ summary: 'Repay borrowed assets to Aave pool' })
   @ApiParam({ name: 'chain', enum: ['optimism', 'base'] })
   async repay(
-    @Param('chain') chain: Chain,
+    @Param('chain') chain: SupportedChain,
     @Body() repayData: AaveOperationDto,
   ) {
     const tokenAddress = TOKEN_ADDRESSES[chain]?.[repayData.call_data.asset];

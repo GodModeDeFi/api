@@ -39,7 +39,7 @@ export class ChainService {
     return customRpcUrl;
   }
 
-  getClient(chain: Chain): PublicClient {
+  getClient(chain: SupportedChain): PublicClient {
     return this.getPublicClient(chain);
   }
 }

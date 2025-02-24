@@ -12,11 +12,9 @@ import {
   ProtocolPositionDto,
   ChainPositionsDto,
 } from '../common/dto/positions.dto';
-import { Chain } from '../common/types/chain.type';
 import { Protocol } from './positions.controller';
 import { AaveService } from 'src/aave/aave.service';
 import { PositionsResponseDto as ProtocolPositionsResponseDto } from '../common/dto/position.dto';
-import { Protocol } from './positions.controller';
 import { SUPPORTED_CHAINS, SupportedChain } from '../common/types/chain.type';
 
 @Injectable()

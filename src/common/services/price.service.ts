@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
-import { Chain } from '../types/chain.type';
+import { SupportedChain } from '../types/chain.type';
 
 interface DexScreenerTokenResponse {
   pairs: Array<{
@@ -35,7 +35,7 @@ export class PriceService {
     'USDC': 1.00 // USDC stablecoin
   };
 
-  async getDexScreenerPrice(chain: Chain, symbol: string, tokenAddress: string): Promise<bigint> {
+  async getDexScreenerPrice(chain: SupportedChain, symbol: string, tokenAddress: string): Promise<bigint> {
     try {
       const cacheKey = `${chain}-${symbol}`;
       const now = Date.now();
