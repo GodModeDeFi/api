@@ -37,34 +37,11 @@ interface ReserveConfig {
   [index: number]: bigint | boolean;
 }
 
-// interface UserAccountData {
-//   totalCollateralBase: bigint;
-//   totalDebtBase: bigint;
-//   availableBorrowsBase: bigint;
-//   currentLiquidationThreshold: bigint;
-//   ltv: bigint;
-//   healthFactor: bigint;
-// }
-
 interface ReserveData {
   [index: number]: bigint;
 }
 
-// Add ERC20 ABI for decimals
 
-
-// Add token decimals mapping
-// const TOKEN_DECIMALS = {
-//   USDC: 6,
-//   USDbC: 6,
-//   WETH: 18,
-//   cbETH: 18,
-//   wstETH: 18,
-//   weETH: 18,
-//   cbBTC: 8,
-//   GHO: 18,
-//   ezETH: 18
-// } as const;
 
 // Add price feed decimals mapping
 const PRICE_FEED_DECIMALS = {
@@ -226,11 +203,6 @@ export class AaveService {
     }
   }
 
-  // Update getTokenDecimals method
-  private async getTokenDecimals(client: PublicClient, tokenAddress: Address): Promise<number> {
-    return this.tokenService.getDecimals(client, tokenAddress);
-  }
-
   // Update the USD calculation in getMarketInfo method:
   private calculateUsdValue(amount: bigint, price: bigint, tokenDecimals: number, priceFeedDecimals: number): string {
     try {
@@ -312,10 +284,7 @@ export class AaveService {
           );
 
           // In getMarketInfo method, update the USD calculations:
-          const tokenDecimals = await this.getTokenDecimals(
-            client, 
-            reserve.tokenAddress
-          );
+          const tokenDecimals = await this.tokenService.getDecimals(client, reserve.tokenAddress);
           const priceFeedDecimals = PRICE_FEED_DECIMALS[chain]?.[reserve.symbol] || 8;
 
           // Update return object to include USD values with proper scaling
@@ -437,7 +406,7 @@ export class AaveService {
             reserve.symbol,
             DEXSCREENER_PAIRS[chain]?.[reserve.symbol]
           );
-          const tokenDecimals = await this.getTokenDecimals(client, reserve.tokenAddress);
+          const tokenDecimals = await this.tokenService.getDecimals(client, reserve.tokenAddress);
 
           // Calculate USD values directly using the price and balance
           const supplyUsd = (Number(supplyBalance) / 10 ** tokenDecimals) * (Number(priceUsd) / 1e8);
