@@ -1,12 +1,2 @@
-export type Chain =
-  | 'optimism'
-  | 'base'
-  | 'mode'
-  | 'bob'
-  | 'fraxtal'
-  | 'lisk'
-  | 'ink'
-  | 'superseed'
-  | 'worldchain'
-  | 'swell'
-  | 'soneium';
+export const SUPPORTED_CHAINS = ['base', 'mode', 'mainnet'] as const;
+export type SupportedChain = (typeof SUPPORTED_CHAINS)[number];

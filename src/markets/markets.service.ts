@@ -8,8 +8,7 @@ import {
   ProtocolPoolsDto,
 } from '../common/dto/market.dto';
 import { MarketSearchQueryDto } from '../common/dto/market-search.dto';
-
-const SUPPORTED_CHAINS = ['base', 'mode'] as const;
+import { SUPPORTED_CHAINS, SupportedChain } from '../common/types/chain.type';
 
 @Injectable()
 export class MarketsService {
@@ -47,9 +46,7 @@ export class MarketsService {
       : (Object.keys(this.protocolHandlers) as Protocol[]);
 
     const chainPromises = chainsToQuery.map(
-      async (
-        chain: (typeof SUPPORTED_CHAINS)[number],
-      ): Promise<ChainMarketsDto> => {
+      async (chain: SupportedChain): Promise<ChainMarketsDto> => {
         const chainQuery = { ...query, chain };
         const protocolPromises = protocolsToQuery.map((protocol) =>
           this.protocolHandlers[protocol](chainQuery).catch(() => ({

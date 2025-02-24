@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Chain } from '../types/chain.type';
 import { getChainConfig } from '../utils/chain.utils';
 import { PublicClient, createPublicClient, http } from 'viem';
-
+import { SupportedChain } from '../types/chain.type';
 @Injectable()
 export class ChainService {
-  private readonly clients: Map<Chain, PublicClient> = new Map();
+  private readonly clients: Map<SupportedChain, PublicClient> = new Map();
 
   constructor(private readonly configService: ConfigService) {}
 
-  getPublicClient(chain: Chain): PublicClient {
+  getPublicClient(chain: SupportedChain): PublicClient {
     let client = this.clients.get(chain);
     if (!client) {
       client = this.createPublicClient(chain);
@@ -19,12 +18,12 @@ export class ChainService {
     return client;
   }
 
-  getChainId(chain: Chain): number {
+  getChainId(chain: SupportedChain): number {
     const chainConfig = getChainConfig(chain);
     return chainConfig.id;
   }
 
-  private createPublicClient(chain: Chain): PublicClient {
+  private createPublicClient(chain: SupportedChain): PublicClient {
     const chainConfig = getChainConfig(chain);
     const rpcUrl = this.getRpcUrl(chain);
 
@@ -34,7 +33,7 @@ export class ChainService {
     });
   }
 
-  private getRpcUrl(chain: Chain): string | undefined {
+  private getRpcUrl(chain: SupportedChain): string | undefined {
     const envKey = `${chain.toUpperCase()}_RPC_URL`;
     const customRpcUrl = this.configService.get<string>(envKey);
     return customRpcUrl;

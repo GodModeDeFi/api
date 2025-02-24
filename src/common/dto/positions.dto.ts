@@ -2,7 +2,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 // Types
-import { Chain } from '../types/chain.type';
+import { SupportedChain } from '../types/chain.type';
 
 export class AssetDto {
   @ApiProperty({
@@ -100,7 +100,7 @@ export class ChainPositionsDto {
     description: 'Chain name',
     example: 'Base',
   })
-  chain: Chain;
+  chain: SupportedChain;
 
   @ApiProperty({
     description: 'Total value in USD for this chain',

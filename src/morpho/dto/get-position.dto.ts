@@ -1,27 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import { Chain } from '../../common/types/chain.type';
 import { BaseRequestDto } from 'src/common/dto/base-request.dto';
+import { SupportedChain } from 'src/common/types/chain.type';
 
 export class GetPositionParamsDto extends BaseRequestDto {
   @ApiProperty({
     description: 'The blockchain network',
-    enum: [
-      'optimism',
-      'base',
-      'mode',
-      'bob',
-      'fraxtal',
-      'lisk',
-      'ink',
-      'superseed',
-      'worldchain',
-      'swell',
-      'soneium',
-    ],
+    enum: ['base', 'mode', 'mainnet'],
     example: 'optimism',
   })
-  chain: Chain;
+  chain: SupportedChain;
 
   @ApiProperty({
     description: 'The market ID',

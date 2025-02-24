@@ -2,9 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 import { Protocol, PROTOCOLS } from '../../positions/positions.controller';
-
-const SUPPORTED_CHAINS = ['base', 'mode'] as const;
-type SupportedChain = (typeof SUPPORTED_CHAINS)[number];
+import { SUPPORTED_CHAINS, SupportedChain } from '../types/chain.type';
 
 export class MarketSearchQueryDto {
   @ApiProperty({

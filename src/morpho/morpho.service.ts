@@ -6,15 +6,13 @@ import { Address, formatEther } from 'viem';
 import { MorphoGraphQLService } from './services/graphql.service';
 
 // DTOs and types
-import { Chain } from '../common/types/chain.type';
 import { MarketPoolDto, ProtocolPoolsDto } from '../common/dto/market.dto';
 import { PositionsResponseDto } from '../common/dto/position.dto';
 
 // Constants and utils
 import { getChainId } from '../common/utils/chain.utils';
-import { MarketSearchQueryDto } from 'src/common/dto/market-search.dto';
-
-const SUPPORTED_CHAINS: Chain[] = ['base'];
+import { MarketSearchQueryDto } from '../common/dto/market-search.dto';
+import { SupportedChain, SUPPORTED_CHAINS } from '../common/types/chain.type';
 
 @Injectable()
 export class MorphoService {
@@ -23,7 +21,7 @@ export class MorphoService {
   constructor(private readonly graphqlService: MorphoGraphQLService) {}
 
   async getPositions(
-    chain: Chain,
+    chain: SupportedChain,
     address: Address,
   ): Promise<PositionsResponseDto> {
     if (!SUPPORTED_CHAINS.includes(chain)) {

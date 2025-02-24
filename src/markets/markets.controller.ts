@@ -35,7 +35,7 @@ Returns market information filtered by optional chain, protocol, and asset param
     name: 'chain',
     required: false,
     description: 'Filter markets by chain',
-    enum: ['base', 'mode'],
+    enum: ['base', 'mode', 'mainnet'],
     example: 'base',
   })
   @ApiQuery({

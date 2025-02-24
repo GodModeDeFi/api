@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Chain } from '../types/chain.type';
+import { SupportedChain } from '../types/chain.type';
 
 export class MarketRewardDto {
   @ApiProperty({
@@ -147,7 +147,7 @@ export class ChainMarketsDto {
     description: 'Chain name',
     example: 'base',
   })
-  chain: Chain;
+  chain: SupportedChain;
 
   @ApiProperty({
     description: 'List of protocols',

@@ -1,24 +1,14 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
-import { Chain } from '../types/chain.type';
+import { SupportedChain } from '../types/chain.type';
 
 @Injectable()
-export class ChainValidationPipe implements PipeTransform<string, Chain> {
-  private readonly validChains: Chain[] = [
-    'optimism',
-    'base',
-    'mode',
-    'bob',
-    'fraxtal',
-    'lisk',
-    'ink',
-    'superseed',
-    'worldchain',
-    'swell',
-    'soneium',
-  ];
+export class ChainValidationPipe
+  implements PipeTransform<string, SupportedChain>
+{
+  private readonly validChains: SupportedChain[] = ['base', 'mode', 'mainnet'];
 
-  transform(value: string): Chain {
-    const chain = value.toLowerCase() as Chain;
+  transform(value: string): SupportedChain {
+    const chain = value.toLowerCase() as SupportedChain;
     if (!this.validChains.includes(chain)) {
       throw new BadRequestException(`Invalid chain: ${value}`);
     }

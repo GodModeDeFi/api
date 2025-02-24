@@ -1,27 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEthereumAddress, IsNumber, IsString, Min } from 'class-validator';
 import { BaseRequestDto } from '../../common/dto/base-request.dto';
-import { Chain } from '../../common/types/chain.type';
+import { SupportedChain } from '../../common/types/chain.type';
 
 export class PoolOperationParamsDto {
   @ApiProperty({
     description: 'The blockchain network',
-    enum: [
-      'optimism',
-      'base',
-      'mode',
-      'bob',
-      'fraxtal',
-      'lisk',
-      'ink',
-      'superseed',
-      'worldchain',
-      'swell',
-      'soneium',
-    ],
-    example: 'optimism',
+    enum: ['base', 'mode', 'mainnet'],
+    example: 'base',
   })
-  chain: Chain;
+  chain: SupportedChain;
 }
 
 export class PoolOperationCallDataDto {

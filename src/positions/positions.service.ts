@@ -12,11 +12,9 @@ import {
   ProtocolPositionDto,
   ChainPositionsDto,
 } from '../common/dto/positions.dto';
-import { Chain } from '../common/types/chain.type';
 import { PositionsResponseDto as ProtocolPositionsResponseDto } from '../common/dto/position.dto';
 import { Protocol } from './positions.controller';
-
-const SUPPORTED_CHAINS: Chain[] = ['base', 'mode'];
+import { SUPPORTED_CHAINS, SupportedChain } from '../common/types/chain.type';
 
 @Injectable()
 export class PositionsService {
@@ -27,7 +25,7 @@ export class PositionsService {
 
   async getChainPositions(
     address: Address,
-    chain: Chain,
+    chain: SupportedChain,
     protocol?: Protocol,
   ): Promise<ChainPositionsDto | null> {
     // Get positions from both protocols if no filter, or just the requested protocol
@@ -204,12 +202,12 @@ export class PositionsService {
   async getAllPositions(
     address: Address,
     protocol?: Protocol,
-    chain?: Chain,
+    chain?: SupportedChain,
   ): Promise<PositionsResponseDto> {
     // Get positions for each supported chain
     const chainsToQuery = chain ? [chain] : SUPPORTED_CHAINS;
     const chainResults = await Promise.all(
-      chainsToQuery.map((chain) =>
+      chainsToQuery.map((chain: SupportedChain) =>
         this.getChainPositions(address, chain, protocol),
       ),
     );

@@ -1,26 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import { Chain } from '../../common/types/chain.type';
+import { SupportedChain } from '../../common/types/chain.type';
 
 export class GetMarketAddressParamsDto {
   @ApiProperty({
     description: 'The blockchain network',
-    enum: [
-      'optimism',
-      'base',
-      'mode',
-      'bob',
-      'fraxtal',
-      'lisk',
-      'ink',
-      'superseed',
-      'worldchain',
-      'swell',
-      'soneium',
-    ],
-    example: 'optimism',
+    enum: ['base', 'mode', 'mainnet'],
+    example: 'base',
   })
-  chain: Chain;
+  chain: SupportedChain;
 
   @ApiProperty({
     description: 'The asset symbol',

@@ -10,7 +10,7 @@ import {
   PoolOperationRequestDto,
   PoolOperationResponseDto,
 } from './dto/pool-operations.dto';
-import { SupportedChain } from './ionic.service';
+import { SupportedChain } from '../common/types/chain.type';
 
 // Pipes
 import { ChainValidationPipe } from '../common/pipes/chain-validation.pipe';
