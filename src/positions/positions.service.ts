@@ -12,8 +12,9 @@ import {
   ProtocolPositionDto,
   ChainPositionsDto,
 } from '../common/dto/positions.dto';
-import { PositionsResponseDto as ProtocolPositionsResponseDto } from '../common/dto/position.dto';
 import { Protocol } from './positions.controller';
+import { AaveService } from 'src/aave/aave.service';
+import { PositionsResponseDto as ProtocolPositionsResponseDto } from '../common/dto/position.dto';
 import { SUPPORTED_CHAINS, SupportedChain } from '../common/types/chain.type';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class PositionsService {
   constructor(
     private readonly ionicService: IonicService,
     private readonly morphoService: MorphoService,
+    private readonly aaveService: AaveService,
   ) {}
 
   async getChainPositions(
@@ -31,13 +33,17 @@ export class PositionsService {
     // Get positions from both protocols if no filter, or just the requested protocol
     const shouldGetIonic = !protocol || protocol === 'ionic';
     const shouldGetMorpho = !protocol || protocol === 'morpho';
+    const shouldGetAave = !protocol || protocol === 'aave';
 
-    const positionPromises: Promise<ProtocolPositionsResponseDto>[] = [];
+    const positionPromises: Promise<any>[] = [];
     if (shouldGetIonic) {
       positionPromises.push(this.ionicService.getPositions(chain, address));
     }
     if (shouldGetMorpho) {
       positionPromises.push(this.morphoService.getPositions(chain, address));
+    }
+    if (shouldGetAave) {
+      positionPromises.push(this.aaveService.getPositions(chain, address));
     }
 
     const positionResults = await Promise.allSettled(positionPromises);
@@ -46,6 +52,9 @@ export class PositionsService {
       positions: { pools: [] },
     };
     let morphoPositions: ProtocolPositionsResponseDto = {
+      positions: { pools: [] },
+    };
+    let aavePositions: ProtocolPositionsResponseDto = {
       positions: { pools: [] },
     };
 
@@ -61,6 +70,12 @@ export class PositionsService {
       const result = positionResults[resultIndex];
       if (result.status === 'fulfilled') {
         morphoPositions = result.value;
+      }
+    }
+    if (shouldGetAave) {
+      const result = positionResults[resultIndex];
+      if (result.status === 'fulfilled') {
+        aavePositions = result.value;
       }
     }
 
@@ -171,6 +186,45 @@ export class PositionsService {
         morphoProtocolPosition.totalBorrowUsd > 0
       ) {
         protocols.push(morphoProtocolPosition);
+      }
+    }
+
+    // Add Aave positions handling
+    if (shouldGetAave && positionResults[resultIndex]?.status === 'fulfilled') {
+      const result = positionResults[resultIndex];
+      if (result.status === 'fulfilled') {
+        const aavePositions = result.value;
+        
+        if (aavePositions.positions.pools.length > 0) {
+          const aaveProtocolPosition: ProtocolPositionDto = {
+            protocol: 'aave',
+            totalSupplyUsd: 0,
+            totalBorrowUsd: 0,
+            netValueUsd: 0,
+            pools: aavePositions.positions.pools.map((pool) => ({
+              name: pool.name,
+              poolId: pool.poolId,
+              assets: pool.assets.map((asset) => ({
+                asset: asset.symbol,
+                supplyBalance: asset.supplyBalance,
+                supplyBalanceUsd: Number(asset.supplyBalanceUsd),
+                borrowBalance: asset.borrowBalance,
+                borrowBalanceUsd: Number(asset.borrowBalanceUsd),
+              })),
+              healthFactor: pool.healthFactor,
+            })),
+          };
+
+          // Calculate Aave totals
+          aaveProtocolPosition.totalSupplyUsd = Number(aavePositions.positions.pools[0].totalSuppliedUsd);
+          aaveProtocolPosition.totalBorrowUsd = Number(aavePositions.positions.pools[0].totalBorrowUsd);
+          aaveProtocolPosition.netValueUsd = 
+            aaveProtocolPosition.totalSupplyUsd - aaveProtocolPosition.totalBorrowUsd;
+
+          if (aaveProtocolPosition.totalSupplyUsd > 0 || aaveProtocolPosition.totalBorrowUsd > 0) {
+            protocols.push(aaveProtocolPosition);
+          }
+        }
       }
     }
 
