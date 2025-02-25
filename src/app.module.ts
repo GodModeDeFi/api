@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { PositionsModule } from './positions/positions.module';
 import { SharedModule } from './common/shared.module';
 import { MarketsModule } from './markets/markets.module';
+import { AaveModule } from './aave/aave.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MarketsModule } from './markets/markets.module';
     SharedModule,
     MorphoModule,
     IonicModule,
+    AaveModule,
     PositionsModule,
     MarketsModule,
   ],

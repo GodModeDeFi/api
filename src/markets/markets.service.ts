@@ -8,6 +8,10 @@ import {
   ProtocolPoolsDto,
 } from '../common/dto/market.dto';
 import { MarketSearchQueryDto } from '../common/dto/market-search.dto';
+import { AaveService } from '../aave/aave.service';
+import { Chain } from '../common/types/chain.type';
+
+const SUPPORTED_CHAINS = ['base', 'mode'] as const;
 import { SUPPORTED_CHAINS, SupportedChain } from '../common/types/chain.type';
 
 @Injectable()
@@ -15,6 +19,7 @@ export class MarketsService {
   constructor(
     private readonly ionicService: IonicService,
     private readonly morphoService: MorphoService,
+    private readonly aaveService: AaveService,
   ) {}
 
   private readonly protocolHandlers: Record<
@@ -23,6 +28,7 @@ export class MarketsService {
   > = {
     ionic: (query) => this.getIonicMarkets(query),
     morpho: (query) => this.getMorphoMarkets(query),
+    aave: (query) => this.getAaveMarkets(query),
   };
 
   private async getIonicMarkets(
@@ -35,6 +41,39 @@ export class MarketsService {
     query: MarketSearchQueryDto,
   ): Promise<ProtocolPoolsDto> {
     return this.morphoService.getMarketInfo(query);
+  }
+
+  private async getAaveMarkets(
+    query: MarketSearchQueryDto,
+  ): Promise<ProtocolPoolsDto> {
+    const marketInfo = await this.aaveService.getMarketInfo(query.chain as Chain);
+
+    // Transform string values to numbers
+    const transformedPools = marketInfo.pools.map(pool => ({
+      ...pool,
+      totalValueUsd: Number(pool.totalValueUsd),
+      assets: pool.assets.map(asset => ({
+        ...asset,
+        totalSupplyUsd: Number(asset.totalSupplyUsd),
+        totalBorrowUsd: Number(asset.totalBorrowUsd),
+        liquidityUsd: Number(asset.liquidityUsd)
+      }))
+    }));
+
+    return {
+      ...marketInfo,
+      pools: transformedPools.map(pool => ({
+        ...pool,
+        totalValueUsd: pool.totalValueUsd,
+        assets: pool.assets.map(asset => ({
+          ...asset,
+          totalSupplyUsd: asset.totalSupplyUsd.toString(),
+          totalBorrowUsd: asset.totalBorrowUsd.toString(), 
+          liquidityUsd: asset.liquidityUsd.toString(),
+          rewards: []
+        }))
+      }))
+    };
   }
 
   async getAllMarkets(

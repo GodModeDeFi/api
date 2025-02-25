@@ -4,11 +4,12 @@ import { MorphoService } from '../morpho/morpho.service';
 import { MarketsService } from './markets.service';
 import { MarketSearchQueryDto } from '../common/dto/market-search.dto';
 import { MarketsResponseDto } from '../common/dto/market.dto';
-
+import { AaveService } from 'src/aave/aave.service';
 describe('MarketsService', () => {
   let service: MarketsService;
   let ionicService: IonicService;
   let morphoService: MorphoService;
+  let aaveService: AaveService;
 
   const mockMarket = {
     id: 'WETH',
@@ -24,6 +25,11 @@ describe('MarketsService', () => {
 
   const mockMorphoMarkets: MarketsResponseDto = {
     totalValueUsd: 500000,
+    markets: [mockMarket],
+  };
+
+  const mockAaveMarkets: MarketsResponseDto = {
+    totalValueUsd: 250000,
     markets: [mockMarket],
   };
 
@@ -43,12 +49,19 @@ describe('MarketsService', () => {
             getMarketInfo: jest.fn().mockResolvedValue(mockMorphoMarkets),
           },
         },
+        {
+          provide: AaveService,
+          useValue: {
+            getMarketInfo: jest.fn().mockResolvedValue(mockAaveMarkets),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<MarketsService>(MarketsService);
     ionicService = module.get<IonicService>(IonicService);
     morphoService = module.get<MorphoService>(MorphoService);
+    aaveService = module.get<AaveService>(AaveService);
   });
 
   it('should be defined', () => {
@@ -106,6 +119,22 @@ describe('MarketsService', () => {
       });
       expect(morphoService.getMarketInfo).not.toHaveBeenCalled();
     });
+
+    it('should return aave markets when protocol is aave', async () => {
+      const query: MarketSearchQueryDto = { chain: 'base', asset: 'ETH' };
+      const result = await service.getProtocolMarkets(
+        'aave',
+        query.chain,
+        query.asset,
+      );
+
+      expect(result).toEqual({
+        protocol: 'aave',
+        totalValueUsd: mockAaveMarkets.totalValueUsd,
+        markets: mockAaveMarkets.markets,
+      });
+      expect(aaveService.getMarketInfo).toHaveBeenCalledWith(query);
+    });
   });
 
   describe('getAllMarkets', () => {
@@ -115,7 +144,9 @@ describe('MarketsService', () => {
 
       expect(result).toEqual({
         totalValueUsd:
-          mockIonicMarkets.totalValueUsd + mockMorphoMarkets.totalValueUsd,
+          mockIonicMarkets.totalValueUsd + 
+          mockMorphoMarkets.totalValueUsd + 
+          mockAaveMarkets.totalValueUsd,
         protocols: [
           {
             protocol: 'ionic',
@@ -126,6 +157,11 @@ describe('MarketsService', () => {
             protocol: 'morpho',
             totalValueUsd: mockMorphoMarkets.totalValueUsd,
             markets: mockMorphoMarkets.markets,
+          },
+          {
+            protocol: 'aave',
+            totalValueUsd: mockAaveMarkets.totalValueUsd,
+            markets: mockAaveMarkets.markets,
           },
         ],
       });
@@ -139,6 +175,9 @@ describe('MarketsService', () => {
       jest
         .spyOn(ionicService, 'getMarketInfo')
         .mockResolvedValueOnce(emptyMarkets);
+      jest
+        .spyOn(aaveService, 'getMarketInfo')
+        .mockResolvedValueOnce(emptyMarkets);
 
       const result = await service.getAllMarkets('base', 'ETH');
 
@@ -149,8 +188,9 @@ describe('MarketsService', () => {
     it('should handle no chain parameter', async () => {
       const result = await service.getAllMarkets(undefined, 'ETH');
 
-      expect(result.protocols).toHaveLength(1);
+      expect(result.protocols).toHaveLength(2);
       expect(result.protocols[0].protocol).toBe('ionic');
+      expect(result.protocols[1].protocol).toBe('aave');
       expect(morphoService.getMarketInfo).not.toHaveBeenCalled();
     });
   });
